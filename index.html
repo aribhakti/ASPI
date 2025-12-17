@@ -17,8 +17,8 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts (with display=swap for performance) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Public Sans - The Midtrans/Modern Fintech Standard -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Tailwind Configuration -->
     <script>
@@ -40,8 +40,9 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
+                        // Replacing Inter and Playfair with Public Sans across the board
+                        sans: ['"Public Sans"', 'sans-serif'],
+                        serif: ['"Public Sans"', 'sans-serif'],
                     },
                     animation: {
                         'spin-slow': 'spin 60s linear infinite',
@@ -92,17 +93,14 @@
       window.addEventListener('error', function(e) {
         console.error("Global Error:", e.error);
         const root = document.getElementById('root');
-        // Only show error on screen if the app hasn't loaded yet
         if (root && root.querySelector('.animate-spin')) {
-             root.innerHTML = '<div style="padding:20px; color:#CE1126; font-family:sans-serif; text-align:center;"><h2>Unable to load application</h2><p style="color:#666">Please check console for details.</p><pre style="background:#f5f5f5; padding:10px; border-radius:4px; text-align:left; overflow:auto; display:inline-block; max-width:100%;">'+e.message+'</pre></div>';
+             root.innerHTML = '<div style="padding:20px; color:#CE1126; font-family:\'Public Sans\', sans-serif; text-align:center;"><h2>Unable to load application</h2><p style="color:#666">Please check console for details.</p><pre style="background:#f5f5f5; padding:10px; border-radius:4px; text-align:left; overflow:auto; display:inline-block; max-width:100%;">'+e.message+'</pre></div>';
         }
       });
     </script>
 </head>
 <body class="bg-white text-slate-800 font-sans antialiased">
-    <!-- Removed flex/centering classes from root to allow full-size app rendering -->
     <div id="root">
-        <!-- Temporary centered loader -->
         <div class="min-h-screen flex flex-col items-center justify-center">
             <div class="h-12 w-12 border-4 border-aspi-blue-light border-t-transparent rounded-full animate-spin mb-4"></div>
             <span class="text-slate-500 font-medium">Memuat ASPI Platform...</span>
