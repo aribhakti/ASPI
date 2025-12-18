@@ -39,7 +39,8 @@ const simulateAction = (message: string) => {
 };
 
 // --- Tooltip Component ---
-const Tooltip = ({ text, children }: { text: string; children: React.ReactNode }) => {
+// Fix: Made children optional to resolve TypeScript error 'Property children is missing' on line 263
+const Tooltip = ({ text, children }: { text: string; children?: React.ReactNode }) => {
   const [visible, setVisible] = useState(false);
   return (
     <div className="relative inline-block" onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
@@ -365,29 +366,66 @@ const DigitalIndonesiaMap = () => {
     const { left, top, width, height } = mapRef.current.getBoundingClientRect();
     const x = (e.clientX - left) / width - 0.5;
     const y = (e.clientY - top) / height - 0.5;
-    mapRef.current.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) scale(${hovered ? 1.05 : 1})`;
+    mapRef.current.style.transform = `perspective(1000px) rotateY(${x * 15}deg) rotateX(${-y * 15}deg) scale(${hovered ? 1.08 : 1})`;
   };
 
   const svgContent = `
-    <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <svg viewBox="0 0 1000 450" xmlns="http://www.w3.org/2000/svg" fill="none">
         <style>
-            @keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
-            @keyframes pulse { 50% { opacity: .5; } }
-            .ping { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; transform-origin: center; transform-box: fill-box; }
-            .pulse { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+            @keyframes pulse { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+            @keyframes scan { 0% { opacity: 0.1; } 50% { opacity: 0.5; } 100% { opacity: 0.1; } }
+            @keyframes flow { 0% { stroke-dashoffset: 30; } 100% { stroke-dashoffset: 0; } }
+            .map-dot { fill: #0077C8; opacity: 0.2; transition: all 0.3s; }
+            .map-dot:hover { fill: #00A3E0; opacity: 1; r: 3; }
+            .line-conn { stroke: #00A3E0; stroke-width: 1; stroke-dasharray: 4 6; opacity: 0.25; animation: flow 2s linear infinite; }
+            .hub-core { fill: #CE1126; filter: drop-shadow(0 0 8px #CE1126); }
+            .hub-ring { stroke: #CE1126; stroke-width: 1.5; animation: pulse 2s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
         </style>
-        <g class="pulse" opacity="0.3">
-            <path d="M190 185 L240 70" stroke="#00A3E0" stroke-width="0.7" stroke-dasharray="4 6" />
-            <path d="M190 185 L350 120" stroke="#00A3E0" stroke-width="0.7" stroke-dasharray="4 6" />
-            <path d="M190 185 L540 125" stroke="#00A3E0" stroke-width="0.7" stroke-dasharray="4 6" />
-            <path d="M190 185 L100 95" stroke="#00A3E0" stroke-width="0.7" stroke-dasharray="4 6" />
+        
+        <!-- Background Network Effect -->
+        <g opacity="0.05">
+            <path d="M50 50 L950 400 M50 400 L950 50" stroke="#00A3E0" stroke-width="0.5" />
         </g>
+
+        <!-- Dot Matrix Indonesia (Stylized Archipelago) -->
+        <g class="dots">
+            <!-- Sumatra -->
+            <circle class="map-dot" cx="120" cy="150" r="2" /><circle class="map-dot" cx="140" cy="170" r="2" /><circle class="map-dot" cx="160" cy="190" r="2" /><circle class="map-dot" cx="180" cy="210" r="2" /><circle class="map-dot" cx="200" cy="230" r="2" /><circle class="map-dot" cx="220" cy="250" r="2" />
+            <circle class="map-dot" cx="145" cy="145" r="2" /><circle class="map-dot" cx="165" cy="165" r="2" /><circle class="map-dot" cx="185" cy="185" r="2" /><circle class="map-dot" cx="205" cy="205" r="2" />
+            
+            <!-- Java -->
+            <circle class="map-dot" cx="260" cy="280" r="2" /><circle class="map-dot" cx="290" cy="285" r="2" /><circle class="map-dot" cx="320" cy="290" r="2" /><circle class="map-dot" cx="350" cy="295" r="2" /><circle class="map-dot" cx="380" cy="300" r="2" /><circle class="map-dot" cx="410" cy="300" r="2" /><circle class="map-dot" cx="440" cy="305" r="2" />
+            
+            <!-- Kalimantan -->
+            <circle class="map-dot" cx="330" cy="150" r="2" /><circle class="map-dot" cx="360" cy="130" r="2" /><circle class="map-dot" cx="390" cy="120" r="2" /><circle class="map-dot" cx="420" cy="130" r="2" /><circle class="map-dot" cx="430" cy="160" r="2" /><circle class="map-dot" cx="400" cy="180" r="2" /><circle class="map-dot" cx="360" cy="170" r="2" />
+            
+            <!-- Sulawesi -->
+            <circle class="map-dot" cx="480" cy="170" r="2" /><circle class="map-dot" cx="500" cy="140" r="2" /><circle class="map-dot" cx="520" cy="170" r="2" /><circle class="map-dot" cx="510" cy="200" r="2" /><circle class="map-dot" cx="490" cy="230" r="2" />
+            
+            <!-- Bali & Nusa Tenggara -->
+            <circle class="map-dot" cx="470" cy="310" r="2" /><circle class="map-dot" cx="500" cy="315" r="2" /><circle class="map-dot" cx="530" cy="320" r="2" />
+            
+            <!-- Papua -->
+            <circle class="map-dot" cx="680" cy="210" r="2" /><circle class="map-dot" cx="710" cy="200" r="2" /><circle class="map-dot" cx="740" cy="190" r="2" /><circle class="map-dot" cx="770" cy="200" r="2" /><circle class="map-dot" cx="800" cy="220" r="2" /><circle class="map-dot" cx="820" cy="240" r="2" />
+            <circle class="map-dot" cx="700" cy="230" r="2" /><circle class="map-dot" cx="730" cy="220" r="2" /><circle class="map-dot" cx="760" cy="230" r="2" /><circle class="map-dot" cx="790" cy="250" r="2" />
+        </g>
+
+        <!-- Dynamic Connection Beams -->
         <g>
-            <circle cx="190" cy="185" r="10" fill="#CE1126" fill-opacity="0.3" class="ping" />
-            <circle cx="190" cy="185" r="5" fill="#CE1126" />
-            <circle cx="80" cy="80" r="4" fill="#0077C8" />
-            <circle cx="540" cy="125" r="4" fill="#00A3E0" />
+            <path class="line-conn" d="M180 210 Q 280 220, 290 285" />
+            <path class="line-conn" d="M290 285 Q 400 240, 500 170" />
+            <path class="line-conn" d="M500 170 Q 600 200, 710 200" />
+            <path class="line-conn" d="M390 120 L290 285" />
         </g>
+
+        <!-- The Pulse of Indonesia (Main Jakarta Hub) -->
+        <g>
+            <circle class="hub-core" cx="290" cy="285" r="7" />
+            <circle class="hub-ring" cx="290" cy="285" r="14" fill="none" stroke="#CE1126" stroke-width="2" />
+        </g>
+
+        <!-- Secondary Regional Hubs -->
+        <circle fill="#00A3E0" cx="180" cy="210" r="4.5" /><circle fill="#00A3E0" cx="390" cy="120" r="4.5" /><circle fill="#00A3E0" cx="500" cy="170" r="4.5" /><circle fill="#00A3E0" cx="710" cy="200" r="4.5" />
     </svg>
   `.replace(/\s+/g, ' ').trim();
 
@@ -399,25 +437,46 @@ const DigitalIndonesiaMap = () => {
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => { setHovered(false); if(mapRef.current) mapRef.current.style.transform = ''; }}
-        className="relative w-full h-full flex items-center justify-center transition-all duration-700 ease-out cursor-crosshair"
+        className="relative w-full h-full flex items-center justify-center transition-all duration-700 ease-out cursor-crosshair group"
     >
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] bg-aspi-blue-dark/30 blur-[120px] rounded-full transition-all duration-1000 ${hovered ? 'scale-125 opacity-70' : 'scale-100 opacity-40'}`}></div>
+        {/* Deep background glow */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-aspi-blue-dark/20 blur-[160px] rounded-full transition-all duration-1000 ${hovered ? 'scale-125 opacity-70' : 'scale-100 opacity-30'}`}></div>
         
+        {/* The Animated SVG Map */}
         <img 
             src={dataUri} 
             alt="Digital Connectivity Map" 
-            className={`w-full h-auto z-10 transition-all duration-1000 ${hovered ? 'drop-shadow-[0_0_40px_rgba(206,17,38,0.5)]' : 'drop-shadow-none'}`}
+            className={`w-full h-auto z-10 transition-all duration-1000 ${hovered ? 'drop-shadow-[0_0_50px_rgba(0,163,224,0.4)] brightness-125' : 'drop-shadow-none brightness-100'} filter`}
         />
 
-        <div className={`absolute bottom-6 right-6 p-4 glass-panel rounded-2xl shadow-2xl transition-all duration-700 ${hovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'} hidden lg:block`}>
-            <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-aspi-cyan animate-pulse"></div>
-                <div className="text-[10px] text-white uppercase tracking-widest font-black">Interkoneksi GPN Nasional</div>
+        {/* Floating Interactive Data Cards */}
+        <div className={`absolute top-1/3 left-0 p-4 glass-panel rounded-3xl shadow-2xl transition-all duration-700 delay-100 transform ${hovered ? 'translate-x-6 opacity-100 scale-100' : '-translate-x-8 opacity-0 scale-90'} hidden xl:block z-20`}>
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-aspi-red animate-ping"></div>
+                    <span className="text-[9px] text-white uppercase tracking-widest font-black">National Switch Hub</span>
+                </div>
+                <div className="text-xl font-black text-white italic tracking-tighter">99.9% Uptime</div>
             </div>
         </div>
+
+        <div className={`absolute bottom-1/3 right-0 p-4 glass-panel rounded-3xl shadow-2xl transition-all duration-700 delay-200 transform ${hovered ? '-translate-x-6 opacity-100 scale-100' : 'translate-x-8 opacity-0 scale-90'} hidden xl:block z-20`}>
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-aspi-blue-light animate-pulse"></div>
+                    <span className="text-[9px] text-white uppercase tracking-widest font-black">Interconnected Nodes</span>
+                </div>
+                <div className="text-xl font-black text-white italic tracking-tighter">266+ Entities</div>
+            </div>
+        </div>
+
+        {/* Central Interactivity Overlay */}
+        <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-aspi-red/5 blur-[100px] rounded-full"></div>
+        </div>
     </div>
-  )
-}
+  );
+};
 
 // --- Background Components ---
 
